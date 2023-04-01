@@ -9,17 +9,16 @@ import {
   getHotels,
   updateHotel,
 } from "../controllers/hotel.js";
-import Hotel from "../models/Hotel.js";
-import {verifyAdmin} from "../utils/verifyToken.js"
+import { protect, admin } from "../utils/verifyToken.js";
 const router = express.Router();
 
 //CREATE
-router.post("/", verifyAdmin, createHotel);
+router.post("/", protect, admin, createHotel);
 
 //UPDATE
-router.put("/:id", verifyAdmin, updateHotel);
+router.put("/:id", protect, admin, updateHotel);
 //DELETE
-router.delete("/:id", verifyAdmin, deleteHotel);
+router.delete("/:id", protect, admin, deleteHotel);
 //GET
 
 router.get("/find/:id", getHotel);
