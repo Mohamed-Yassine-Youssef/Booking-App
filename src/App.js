@@ -1,7 +1,6 @@
 import Home from "./pages/home/Home";
 import Login from "./pages/login/Login";
 import List from "./pages/list/List";
-import Single from "./pages/single/Single";
 import New from "./pages/new/New";
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import { productInputs, userInputs } from "./formSource";
@@ -51,7 +50,7 @@ function App() {
                   </ProtectedRoute>
                 }
               />
-             
+
               <Route
                 path="new"
                 element={
@@ -61,7 +60,7 @@ function App() {
                 }
               />
             </Route>
-            <Route path="accommodations">
+            <Route path="hotels">
               <Route
                 index
                 element={
@@ -74,7 +73,7 @@ function App() {
                 path=":hotelId"
                 element={
                   <ProtectedRoute>
-                    <UpdateHotel/>
+                    <UpdateHotel />
                   </ProtectedRoute>
                 }
               />
@@ -82,7 +81,7 @@ function App() {
                 path="new"
                 element={
                   <ProtectedRoute>
-                    <NewHotel  />
+                    <NewHotel />
                   </ProtectedRoute>
                 }
               />
@@ -108,7 +107,7 @@ function App() {
                 path="new"
                 element={
                   <ProtectedRoute>
-                    <NewRoom  />
+                    <NewRoom />
                   </ProtectedRoute>
                 }
               />

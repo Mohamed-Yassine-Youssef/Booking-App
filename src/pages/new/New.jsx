@@ -2,13 +2,16 @@ import "./new.scss";
 import Sidebar from "../../components/sidebar/Sidebar";
 import Navbar from "../../components/navbar/Navbar";
 import DriveFolderUploadOutlinedIcon from "@mui/icons-material/DriveFolderUploadOutlined";
-import { useState } from "react";
+import { useContext, useState } from "react";
 import axios from "axios";
+import { AuthContext } from "../../context/AuthContext";
+import { useNavigate } from "react-router-dom";
 
 const New = ({ inputs, title }) => {
   const [file, setFile] = useState("");
   const [info, setInfo] = useState({});
-
+  const { user } = useContext(AuthContext);
+  const navigate = useNavigate();
   const handleChange = (e) => {
     setInfo((prev) => ({ ...prev, [e.target.id]: e.target.value }));
   };
@@ -17,10 +20,10 @@ const New = ({ inputs, title }) => {
     e.preventDefault();
     const data = new FormData();
     data.append("file", file);
-    data.append("upload_preset", "upload");
+    data.append("upload_preset", "hotelReservationApp");
     try {
       const uploadRes = await axios.post(
-        "https://api.cloudinary.com/v1_1/lamadev/image/upload",
+        "https://api.cloudinary.com/v1_1/digyrihf0/upload",
         data
       );
 
@@ -30,8 +33,13 @@ const New = ({ inputs, title }) => {
         ...info,
         img: url,
       };
-
-      await axios.post("/auth/register", newUser);
+      const config = {
+        headers: {
+          Authorization: `Bearer ${user.token}`,
+        },
+      };
+      await axios.post("http://localhost:8800/api/users", newUser, config);
+      navigate("/users");
     } catch (err) {
       console.log(err);
     }
@@ -42,7 +50,6 @@ const New = ({ inputs, title }) => {
     <div className="new">
       <Sidebar />
       <div className="newContainer">
-       
         <div className="top">
           <h1>{title}</h1>
         </div>

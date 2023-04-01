@@ -1,19 +1,20 @@
 import "./newRoom.scss";
 import Sidebar from "../../components/sidebar/Sidebar";
-import Navbar from "../../components/navbar/Navbar";
-import DriveFolderUploadOutlinedIcon from "@mui/icons-material/DriveFolderUploadOutlined";
-import { useState } from "react";
+
+import { useContext, useState } from "react";
 import { roomInputs } from "../../formSource";
 import useFetch from "../../hooks/useFetch";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
+import { AuthContext } from "../../context/AuthContext";
 
 const NewRoom = () => {
   const [info, setInfo] = useState({});
   const [hotelId, setHotelId] = useState(undefined);
   const [rooms, setRooms] = useState([]);
-const navigate=useNavigate()
-  const { data, loading, error } = useFetch("/hotels");
+  const navigate = useNavigate();
+  const { data, loading, error } = useFetch("http://localhost:8800/api/hotels");
+  const { user } = useContext(AuthContext);
 
   const handleChange = (e) => {
     setInfo((prev) => ({ ...prev, [e.target.id]: e.target.value }));
@@ -23,20 +24,32 @@ const navigate=useNavigate()
     e.preventDefault();
     const roomNumbers = rooms.split(",").map((room) => ({ number: room }));
     try {
-      await axios.post(`/rooms/${hotelId}`, { ...info, roomNumbers });
-      alert("room added with success")
-      navigate("/rooms")
+      const config = {
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${user.token}`,
+        },
+      };
+      await axios.post(
+        `http://localhost:8800/api/rooms/${hotelId}`,
+        {
+          ...info,
+          roomNumbers,
+        },
+        config
+      );
+      alert("room added with success");
+      navigate("/rooms");
     } catch (err) {
       console.log(err);
     }
   };
 
-  console.log(info)
+  console.log(info);
   return (
     <div className="new">
       <Sidebar />
       <div className="newContainer">
-       
         <div className="top">
           <h1>Add New Room</h1>
         </div>
@@ -71,7 +84,9 @@ const navigate=useNavigate()
                     ? "loading"
                     : data &&
                       data.map((hotel) => (
-                        <option key={hotel._id} value={hotel._id}>{hotel.name}</option>
+                        <option key={hotel._id} value={hotel._id}>
+                          {hotel.name}
+                        </option>
                       ))}
                 </select>
               </div>

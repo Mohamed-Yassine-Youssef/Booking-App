@@ -47,10 +47,10 @@ const { dispatch } = useContext(DarkModeContext);
               <span>Users</span>
             </li>
           </Link>
-          <Link to="/accommodations" style={{ textDecoration: "none" }}>
+          <Link to="/hotels" style={{ textDecoration: "none" }}>
             <li>
               <StoreIcon className="icon" />
-              <span>accommodations </span>
+              <span>Hotels </span>
             </li>
           </Link>
           <Link to="/rooms" style={{ textDecoration: "none" }}>

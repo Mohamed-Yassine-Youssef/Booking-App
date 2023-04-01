@@ -2,18 +2,20 @@ import "./newHotel.scss";
 import Sidebar from "../../components/sidebar/Sidebar";
 import Navbar from "../../components/navbar/Navbar";
 import DriveFolderUploadOutlinedIcon from "@mui/icons-material/DriveFolderUploadOutlined";
-import { useState } from "react";
+import { useContext, useState } from "react";
 import { hotelInputs } from "../../formSource";
 import useFetch from "../../hooks/useFetch";
 import axios from "axios";
+import { useNavigate } from "react-router-dom";
+import { AuthContext } from "../../context/AuthContext";
 
 const NewHotel = () => {
   const [files, setFiles] = useState("");
   const [info, setInfo] = useState({});
   const [rooms, setRooms] = useState([]);
-
-  const { data, loading, error } = useFetch("/rooms");
-
+  const navigate = useNavigate();
+  const { data, loading, error } = useFetch("http://localhost:8800/api/rooms");
+  const { user } = useContext(AuthContext);
   const handleChange = (e) => {
     setInfo((prev) => ({ ...prev, [e.target.id]: e.target.value }));
   };
@@ -25,19 +27,21 @@ const NewHotel = () => {
     );
     setRooms(value);
   };
-  
-  console.log(files)
+
+  console.log(files);
 
   const handleClick = async (e) => {
+    //digyrihf0
+    //hotelReservationApp
     e.preventDefault();
     try {
       const list = await Promise.all(
         Object.values(files).map(async (file) => {
           const data = new FormData();
           data.append("file", file);
-          data.append("upload_preset", "upload");
+          data.append("upload_preset", "hotelReservationApp");
           const uploadRes = await axios.post(
-            "https://api.cloudinary.com/v1_1/lamadev/image/upload",
+            "https://api.cloudinary.com/v1_1/digyrihf0/upload",
             data
           );
 
@@ -51,17 +55,23 @@ const NewHotel = () => {
         rooms,
         photos: list,
       };
-
-      await axios.post("/hotels", newhotel);
-    } catch (err) {console.log(err)}
+      const config = {
+        headers: {
+          Authorization: `Bearer ${user.token}`,
+        },
+      };
+      await axios.post("http://localhost:8800/api/hotels", newhotel, config);
+      navigate("/hotels");
+    } catch (err) {
+      console.log(err);
+    }
   };
   return (
     <div className="new">
       <Sidebar />
       <div className="newContainer">
-       
         <div className="top">
-          <h1>Add New accommodation </h1>
+          <h1>Add New hotel </h1>
         </div>
         <div className="bottom">
           <div className="left">
@@ -100,7 +110,7 @@ const NewHotel = () => {
                   />
                 </div>
               ))}
-             
+
               <div className="selectRooms">
                 <label>Rooms</label>
                 <select id="rooms" multiple onChange={handleSelect}>

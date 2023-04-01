@@ -1,20 +1,21 @@
 import "./updateHotel.scss";
 import Sidebar from "../../components/sidebar/Sidebar";
 import DriveFolderUploadOutlinedIcon from "@mui/icons-material/DriveFolderUploadOutlined";
-import { useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import { hotelInputs } from "../../formSource";
 import useFetch from "../../hooks/useFetch";
 import axios from "axios";
 import { useNavigate, useParams } from "react-router-dom";
+import { AuthContext } from "../../context/AuthContext";
 
 const UpdateHotel = () => {
   const [files, setFiles] = useState("");
   const [info, setInfo] = useState({});
   const [rooms, setRooms] = useState([]);
-const {hotelId}=useParams()
-const navigate=useNavigate()
-  const { data, loading, error } = useFetch("/rooms");
-
+  const { hotelId } = useParams();
+  const navigate = useNavigate();
+  const { data, loading, error } = useFetch("http://localhost:8800/api/rooms");
+  const { user } = useContext(AuthContext);
   const handleChange = (e) => {
     setInfo((prev) => ({ ...prev, [e.target.id]: e.target.value }));
   };
@@ -26,8 +27,8 @@ const navigate=useNavigate()
     );
     setRooms(value);
   };
-  
-  console.log(files)
+
+  console.log(files);
 
   const handleClick = async (e) => {
     e.preventDefault();
@@ -36,9 +37,9 @@ const navigate=useNavigate()
         Object.values(files).map(async (file) => {
           const data = new FormData();
           data.append("file", file);
-          data.append("upload_preset", "upload");
+          data.append("upload_preset", "hotelReservationApp");
           const uploadRes = await axios.post(
-            "https://api.cloudinary.com/v1_1/lamadev/image/upload",
+            "https://api.cloudinary.com/v1_1/digyrihf0/upload",
             data
           );
 
@@ -52,20 +53,28 @@ const navigate=useNavigate()
         rooms,
         photos: list,
       };
-
-      await axios.put("/hotels/"+hotelId, newhotel);
-      navigate("/hotels")
-    } catch (err) {console.log(err)}
+      const config = {
+        headers: {
+          Authorization: `Bearer ${user.token}`,
+        },
+      };
+      await axios.put(
+        "http://localhost:8800/api/hotels/" + hotelId,
+        newhotel,
+        config
+      );
+      navigate("/hotels");
+    } catch (err) {
+      console.log(err);
+    }
   };
-  
 
   return (
     <div className="new">
       <Sidebar />
       <div className="newContainer">
-       
         <div className="top">
-          <h1>Update accommodation </h1>
+          <h1>Update Hotel </h1>
         </div>
         <div className="bottom">
           <div className="left">
@@ -97,7 +106,7 @@ const navigate=useNavigate()
                 <div className="formInput" key={input.id}>
                   <label>{input.label}</label>
                   <input
-                  value={info.id}
+                    value={info.id}
                     id={input.id}
                     onChange={handleChange}
                     type={input.type}
@@ -105,8 +114,7 @@ const navigate=useNavigate()
                   />
                 </div>
               ))}
-             
-            
+
               <button onClick={handleClick}>Send</button>
             </form>
           </div>
