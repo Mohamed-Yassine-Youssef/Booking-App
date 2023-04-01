@@ -13,7 +13,7 @@ const PropertyList = () => {
   ];
   return (
     <div className="pList">
-      {loading ? (
+      {/* {loading ? (
         "loading"
       ) : (
         <>
@@ -32,7 +32,7 @@ const PropertyList = () => {
               </div>
             ))}
         </>
-      )}
+      )} */}
     </div>
   );
 };

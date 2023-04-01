@@ -7,10 +7,14 @@ import { useContext, useState } from "react";
 import { SearchContext } from "../../context/SearchContext";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
+import { AuthContext } from "../../context/AuthContext";
 
 const Reserve = ({ setOpen, hotelId }) => {
+  const { user } = useContext(AuthContext);
   const [selectedRooms, setSelectedRooms] = useState([]);
-  const { data, loading, error } = useFetch(`/hotels/room/${hotelId}`);
+  const { data, loading, error } = useFetch(
+    `http://127.0.0.1:8800/api/hotels/room/${hotelId}`
+  );
   const { dates } = useContext(SearchContext);
 
   const getDatesInRange = (startDate, endDate) => {
@@ -53,14 +57,24 @@ const Reserve = ({ setOpen, hotelId }) => {
 
   const handleClick = async () => {
     try {
+      const config = {
+        headers: {
+          Authorization: `Bearer ${user.token}`,
+        },
+      };
       await Promise.all(
         selectedRooms.map((roomId) => {
-          const res = axios.put(`/rooms/availability/${roomId}`, {
-            dates: alldates,
-          });
+          const res = axios.put(
+            `http://127.0.0.1:8800/api/rooms/availability/${roomId}`,
+            {
+              dates: alldates,
+            },
+            config
+          );
           return res.data;
         })
       );
+      alert("you successfully created your booking");
       setOpen(false);
       navigate("/");
     } catch (err) {}
